@@ -3,186 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech AI | Space Journey</title>
+    <title>Tech AI | Advanced Space</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
         :root {
-            --bg-color: radial-gradient(circle at center, #0a192f 0%, #000 100%);
+            --bg-color: radial-gradient(circle at center, #050b1a 0%, #000 100%);
             --text-color: #00d4ff;
-            --sun-moon-shadow: 0 0 50px #00d4ff;
         }
-
         [data-theme="light"] {
             --bg-color: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
             --text-color: #ffffff;
-            --sun-moon-shadow: 0 0 60px #ffea00;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: var(--bg-color);
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            height: 100vh; background: var(--bg-color);
             font-family: 'Poppins', sans-serif;
-            overflow: hidden;
-            transition: background 1s ease;
+            overflow: hidden; transition: 1s;
         }
 
-        /* دوگمەیا گوهۆڕینا مۆدێ */
-        .theme-switch {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 100;
-            cursor: pointer;
-            font-size: 1.5rem;
+        /* مۆزیک و گوهۆڕینا مۆدێ */
+        .controls {
+            position: fixed; top: 20px; right: 20px;
+            display: flex; gap: 10px; z-index: 100;
+        }
+        .btn-icon {
+            cursor: pointer; font-size: 1.2rem;
             background: rgba(255,255,255,0.1);
-            padding: 10px 15px;
-            border-radius: 50px;
+            padding: 12px; border-radius: 50%;
             border: 1px solid rgba(255,255,255,0.2);
-            backdrop-filter: blur(5px);
-            color: white;
+            color: white; backdrop-filter: blur(5px);
             transition: 0.3s;
         }
+        .btn-icon:hover { background: var(--text-color); color: #000; }
 
-        /* ستایلێ هەسارەیان */
+        /* ستێرێن پارالاکس */
+        #stars-layer { position: absolute; width: 110%; height: 110%; }
+        .star {
+            position: absolute; background: white; border-radius: 50%;
+            opacity: 0.6; animation: twinkle 3s infinite alternate;
+        }
+        @keyframes twinkle { from { opacity: 0.3; } to { opacity: 1; } }
+
+        /* ستێرا گەش (Shooting Star) */
+        .shooting-star {
+            position: absolute; width: 2px; height: 2px;
+            background: linear-gradient(90deg, white, transparent);
+            box-shadow: 0 0 10px white; opacity: 0;
+            animation: shoot 4s infinite ease-in;
+        }
+        @keyframes shoot {
+            0% { transform: translate(100vw, 0) rotate(-45deg); opacity: 1; width: 100px; }
+            20% { transform: translate(50vw, 50vh) rotate(-45deg); opacity: 0; width: 0; }
+            100% { opacity: 0; }
+        }
+
+        /* هەسارە */
         .planet {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.7;
-            pointer-events: none;
-            transition: 1s ease;
+            position: absolute; border-radius: 50%;
+            box-shadow: inset -15px -15px 40px rgba(0,0,0,0.8);
+            transition: 0.2s ease-out; z-index: 2;
         }
-
-        /* د حالەتێ Light Mode دا هەسارە دبنە عەور یان بەرزە دبن */
-        [data-theme="light"] .planet {
-            opacity: 0;
-            transform: translateY(-100vh);
-        }
-
-        .saturn { width: 80px; height: 40px; background: #e3bb76; border-radius: 50%; top: 15%; left: 10%; box-shadow: inset -10px -10px 20px #000; border: 4px solid rgba(227, 187, 118, 0.4); transform: rotate(-20deg); }
-        .jupiter { width: 100px; height: 100px; background: radial-gradient(circle, #d39c7e, #af6124); top: 60%; left: 5%; }
-        .uranus { width: 60px; height: 60px; background: #b0e0e6; top: 10%; right: 15%; box-shadow: 0 0 20px #b0e0e6; }
-        .neptune { width: 50px; height: 50px; background: #4169e1; bottom: 20%; right: 10%; }
-        .moon { width: 40px; height: 40px; background: #ddd; top: 30%; right: 40%; box-shadow: 0 0 15px #fff; }
+        .saturn { width: 100px; height: 100px; background: radial-gradient(circle at 30% 30%, #f4d03f, #9a7d0a); top: 15%; left: 10%; }
+        [data-theme="light"] .planet { display: none; }
 
         /* Welcome Text */
         .welcome-msg {
-            font-size: 3rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 50px;
-            color: var(--text-color);
-            text-shadow: var(--sun-moon-shadow);
+            font-size: 3rem; font-weight: 800; color: var(--text-color);
+            text-shadow: 0 0 20px var(--text-color); z-index: 10;
+        }
+
+        /* Visitor Counter */
+        .counter {
+            position: fixed; bottom: 20px; left: 20px;
+            color: white; font-size: 0.9rem; background: rgba(0,0,0,0.5);
+            padding: 5px 15px; border-radius: 20px; border: 1px solid var(--text-color);
             z-index: 10;
         }
 
-        .container {
-            position: relative;
-            width: 350px;
-            height: 350px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+        .container { position: relative; width: 320px; height: 320px; display: flex; justify-content: center; align-items: center; z-index: 10; }
+        .brand-name { color: #fff; font-size: 2.2rem; font-weight: 900; text-shadow: 0 0 20px #00d4ff; padding: 15px 25px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 2px solid rgba(0,212,255,0.3); border-radius: 15px; }
 
-        .brand-name {
-            color: #ffffff;
-            font-size: 2.2rem;
-            font-weight: 900;
-            text-shadow: 0 0 25px #00d4ff;
-            z-index: 10;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(5px);
-            border: 2px solid rgba(0, 212, 255, 0.3);
-            border-radius: 15px;
-        }
-
-        .orbit {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            animation: rotateOrbit 15s linear infinite;
-        }
-
-        .icon-link {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-            font-size: 1.8rem;
-            transition: 0.4s;
-        }
-
-        .icon-link:hover { transform: scale(1.2); background: #fff; }
-
+        .orbit { position: absolute; width: 100%; height: 100%; border: 1px dashed rgba(255,255,255,0.2); border-radius: 50%; animation: rotate 15s linear infinite; }
+        .icon-link { position: absolute; width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.8rem; transition: 0.3s; color: inherit; }
+        .icon-link:hover { transform: scale(1.2); background: white; color: black; }
+        
         .tiktok { top: -30px; left: 50%; transform: translateX(-50%); color: #ff0050; }
         .instagram { bottom: -30px; left: 50%; transform: translateX(-50%); color: #E1306C; }
         .telegram { top: 50%; left: -30px; transform: translateY(-50%); color: #0088cc; }
 
-        @keyframes rotateOrbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* Sun for Light Mode */
-        .sun {
-            position: absolute;
-            top: -200px;
-            width: 150px;
-            height: 150px;
-            background: #ffea00;
-            border-radius: 50%;
-            box-shadow: 0 0 100px #ffea00;
-            display: none;
-        }
-
-        [data-theme="light"] .sun { display: block; top: 10%; left: 10%; animation: sunFloat 4s ease-in-out infinite; }
-        @keyframes sunFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
 <body data-theme="dark">
 
-    <div class="theme-switch" onclick="toggleTheme()">
-        <i id="theme-icon" class="fas fa-moon"></i>
+    <div id="stars-layer"></div>
+    <div class="shooting-star"></div>
+
+    <div class="controls">
+        <div class="btn-icon" onclick="toggleMusic()"><i id="music-icon" class="fas fa-play"></i></div>
+        <div class="btn-icon" onclick="toggleTheme()"><i id="theme-icon" class="fas fa-moon"></i></div>
     </div>
 
-    <div class="planet saturn"></div>
-    <div class="planet jupiter"></div>
-    <div class="planet uranus"></div>
-    <div class="planet neptune"></div>
-    <div class="planet moon"></div>
-    <div class="sun"></div>
+    <div class="planet saturn" id="saturn"></div>
 
-    <div class="welcome-msg">welcome</div>
+    <div class="welcome-msg" id="welcome-text">welcome</div>
 
     <div class="container">
         <div class="brand-name">Tech Ai</div>
-
         <div class="orbit">
-            <a href="https://www.tiktok.com/@_tech_ai_?_r=1&_t=ZS-95RtUPqa7Sj" target="_blank" class="icon-link tiktok"><i class="fab fa-tiktok"></i></a>
-            <a href="https://www.instagram.com/__tech_.ai._?igsh=MTZ2ZGIxcXB2YjVjaw%3D%3D&utm_source=qr" target="_blank" class="icon-link instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@_tech_ai_" target="_blank" class="icon-link tiktok"><i class="fab fa-tiktok"></i></a>
+            <a href="https://www.instagram.com/__tech_.ai._" target="_blank" class="icon-link instagram"><i class="fab fa-instagram"></i></a>
             <a href="https://t.me/tech_ai_falah" target="_blank" class="icon-link telegram"><i class="fab fa-telegram"></i></a>
         </div>
     </div>
 
+    <div class="counter">سەرەدان: <span id="count">1,248</span></div>
+
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3" type="audio/mpeg">
+    </audio>
+
     <script>
+        // دروستکرنا ستێران
+        const layer = document.getElementById('stars-layer');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = Math.random() * 3 + 'px';
+            star.style.height = star.style.width;
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            layer.appendChild(star);
+        }
+
+        // Parallax Effect
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth / 2 - e.pageX) / 30;
+            const y = (window.innerHeight / 2 - e.pageY) / 30;
+            layer.style.transform = `translate(${x}px, ${y}px)`;
+            
+            const planet = document.getElementById('saturn');
+            planet.style.transform = `translate(${x * 1.5}px, ${y * 1.5}px)`;
+        });
+
+        // گوهۆڕینا دەقی
+        const msg = document.getElementById('welcome-text');
+        const texts = ["welcome", "بخێر بێی"];
+        let i = 0;
+        setInterval(() => { msg.innerText = texts[++i % 2]; }, 1000);
+
+        // مۆزیک
+        const music = document.getElementById('bg-music');
+        function toggleMusic() {
+            const icon = document.getElementById('music-icon');
+            if (music.paused) { music.play(); icon.className = "fas fa-pause"; }
+            else { music.pause(); icon.className = "fas fa-play"; }
+        }
+
+        // مۆد
         function toggleTheme() {
             const body = document.body;
             const icon = document.getElementById('theme-icon');
-            
             if (body.getAttribute('data-theme') === 'dark') {
                 body.setAttribute('data-theme', 'light');
                 icon.className = 'fas fa-sun';
