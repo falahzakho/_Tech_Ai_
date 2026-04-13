@@ -1,0 +1,20 @@
+import sqlite3
+
+# دروستکرنا فایلێ داتابەیسێ
+conn = sqlite3.connect('dkan_data.db')
+cursor = conn.cursor()
+
+# دروستکرنا خشتێ بابەتان (تنێ جارەکێ دهێتە کرن)
+cursor.execute('''CREATE TABLE IF NOT EXISTS items 
+                  (id INTEGER PRIMARY KEY, name TEXT, price REAL)''')
+
+# فانکشن بۆ زێدەکرنا بابەتی ب ڕێکا بەرنامەی
+def add_new_item(name, price):
+    cursor.execute("INSERT INTO items (name, price) VALUES (?, ?)", (name, price))
+    conn.commit()
+    print(f"بابەتێ {name} هاتە زێدەکرن!")
+
+# نوکە تو دشێی ١٠٠ بابەتان زێدە بکەی ب ڤی شێوەیی:
+add_new_item("ئارد", 1500)
+add_new_item("زەیت", 2000)
+# ... هتد
