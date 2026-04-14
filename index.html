@@ -62,7 +62,6 @@
             <input type="password" id="li-pass" placeholder="Password">
             <button class="btn" onclick="login()">Sign In</button>
             <p style="font-size:0.8rem">Don't have an account? <a href="#" onclick="showAuth('signup')" style="color:var(--primary)">Sign Up</a></p>
-            <a href="#" style="color:#8b949e; font-size:0.8rem">Forget Password?</a>
         </div>
     </div>
 
@@ -144,9 +143,6 @@
                 <div class="card-item locked">
                     <span>KYC</span> <span class="soon-badge">Soon</span>
                 </div>
-                <div class="card-item locked">
-                    <span>Team</span> <span class="soon-badge">Soon</span>
-                </div>
                 <button class="btn" style="background:#f85149; color:white;" onclick="logout()">Logout</button>
             </div>
 
@@ -160,14 +156,13 @@
     </div>
 
     <script>
-        // Data Persistence
+        // Data Handling - No reset on reload
         let balance = parseFloat(localStorage.getItem('jf_bal')) || 0;
         let invites = parseInt(localStorage.getItem('jf_invites')) || 0;
         let miningActive = localStorage.getItem('jf_mining') === 'true';
         let endTime = localStorage.getItem('jf_end_time') || 0;
         let tgClaimed = localStorage.getItem('jf_tg_claimed') === 'true';
 
-        // Auth Functions
         function showAuth(type) {
             document.querySelectorAll('.auth-container').forEach(c => c.classList.add('hidden'));
             document.getElementById(type + '-screen').classList.remove('hidden');
@@ -224,7 +219,6 @@
             }
         }
 
-        // Navigation
         function showPage(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
@@ -232,7 +226,6 @@
             el.classList.add('active');
         }
 
-        // Mining System
         function handleMining() {
             if(miningActive) return;
             miningActive = true;
@@ -266,7 +259,7 @@
             }, 1000);
         }
 
-        // Tasks & Referral
+        // --- Telegram Task Logic ---
         function startTgTask() {
             window.open('https://t.me/jfnetwork', '_blank');
             document.getElementById('btn-join').classList.add('hidden');
@@ -279,14 +272,23 @@
             localStorage.setItem('jf_bal', balance);
             localStorage.setItem('jf_tg_claimed', 'true');
             updateUI();
-            alert("Success! +1 JF");
+            alert("Success! +1 JF added.");
         }
 
+        // --- Referral System Logic ---
         function setupReferral() {
             let userId = localStorage.getItem('jf_user_id') || 'user_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('jf_user_id', userId);
             let currentUrl = window.location.href.split('?')[0];
             document.getElementById('ref-link').value = currentUrl + '?ref=' + userId;
+
+            // Check if invited by someone
+            const urlParams = new URLSearchParams(window.location.search);
+            const refBy = urlParams.get('ref');
+            if(refBy && !localStorage.getItem('ref_processed')) {
+                // Here we count the referral (Logic for +1 token requires a real backend, but this sets the stage)
+                localStorage.setItem('ref_processed', 'true');
+            }
         }
 
         function copyRef() {
